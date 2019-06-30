@@ -6,7 +6,7 @@ services:
     -docker build -t tmonsanto/react-test -f ./client/Dockerfile.dev ./client
 
   script: 
-    - docker run tmonsanto/react-test npm test -- --coverage  
+    - docker run -e CI=true tmonsanto/react-test npm test -- --coverage  
 
   after_success:
     - docker build -t tmonsanto/multi-client ./client
