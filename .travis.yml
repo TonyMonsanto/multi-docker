@@ -1,0 +1,24 @@
+sudo: required
+services:
+  - docker
+
+  before_install:
+    -docker build -t tmonsanto/react-test -f ./client/Dockerfile.dev ./client
+
+  script: 
+    - docker run tmonsanto/react-test npm test -- --coverage  
+
+  after_success:
+    - docker build -t tmonsanto/multi-client ./client
+    - docker build -t tmonsanto/multi-nginx ./nginx
+    - docker build -t tmonsanto/multi-server ./server
+    - docker build -t tmonsanto/multi-worker ./worker
+
+    # Log in to docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID"  --password-stdin
+    # Take those images and push them to docker hub
+    - docker push tmonsanto/multi-client
+    - docker push tmonsanto/multi-nginx
+    - docker push tmonsanto/multi-server
+    - docker push tmonsanto/multi-worker
+ 
